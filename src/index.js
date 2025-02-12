@@ -16,17 +16,15 @@ connectDB()
     console.log("DB connection Failed !", error);
   });
 
-
-  
 /*
 const app = express()
 
 
 (async () => {
   try {
-    await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
+    await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);    //this is the syntax to connect the database, and we always need to wrap that into try catch block..
 
-    app.on("error", () => {
+    app.on("error", () => {           //on() is method is express that is used to listen for custom or built-in events in Node.js. `error` is just a built-in event     
       console.log("Error", error);
       throw error;
     });
