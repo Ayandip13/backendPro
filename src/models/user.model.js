@@ -53,7 +53,7 @@ userSchema.pre("save", async function (next) {
   //`pre` hook is also a middleware which helps to execute the perticular function just before save the data(like encrypt the password before save into database), when each middleware calls next.
   if (!this.isModified("password")) return next(); //calling the next() means pass the flag forward.
 
-  this.password = bcrypt.hash(this.password, 10); //`bcrypt` is a library which help us to hash(encrypt) our passwords.
+  this.password = await bcrypt.hash(this.password, 10); //`bcrypt` is a library which help us to hash(encrypt) our passwords.
   next();
 });
 
