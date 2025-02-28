@@ -1,6 +1,10 @@
 // require('dotenv').config({path: './env'})
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
+import express from "express";
+import { app } from "./app.js";
+
+// const app = express();
 
 dotenv.config({
   path: "./env",
@@ -17,9 +21,6 @@ connectDB()
   });
 
 /*
-const app = express()
-
-
 (async () => {
   try {
     await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);    //this is the syntax to connect the database, and we always need to wrap that into try catch block..
