@@ -6,7 +6,7 @@ const storage = multer.diskStorage({
     cb(null, "./public/temp"); // Files will be stored in this folder temporarily
   },
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9); // Unique filename to prevent overwriting (suggested by chatgpt)
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9); // Unique filename to prevent overwriting (suggested by chatgpt)
     cb(null, file.fieldname + "-" + uniqueSuffix + "-" + file.originalname);
   },
 });
