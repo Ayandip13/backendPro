@@ -40,4 +40,4 @@ const videoSchema = new Schema({
 
 videoSchema.plugin(mongooseAggregatePaginate) //this is how we can right the aggregation queries
 
-export const Video = mongoose.Model('Video', videoSchema)
+export const Video = mongoose.model('Video', videoSchema)

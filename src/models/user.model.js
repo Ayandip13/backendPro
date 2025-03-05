@@ -62,9 +62,6 @@ userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password); // `this.password` refers to the hashed password stored in the database for this user document
 };
 
-
-
-
 userSchema.methods.generateAccessToken = async function () {
   // This method generates a new access token for the user
 
@@ -86,10 +83,6 @@ userSchema.methods.generateAccessToken = async function () {
   );
 };
 
-
-
-
-
 userSchema.methods.generateRefreshToken = async function () {
   // This method generates a new refresh token for the user
 
@@ -107,4 +100,4 @@ userSchema.methods.generateRefreshToken = async function () {
   );
 };
 
-export const User = mongoose.Model("User", userSchema);
+export const User = mongoose.model("User", userSchema);

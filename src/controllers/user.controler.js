@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser = asyncHandler(async (req, res) => {
   //Steps to register the user :-
-  //Get the user details from the request body.
+  //Get the user details from the request body (frontend).
   //validate that username, email all require fields are correct or not
   //Check if a user with the same username or email already exists.
   //Verify if avatar and cover image files are provided.
@@ -28,7 +28,11 @@ const registerUser = asyncHandler(async (req, res) => {
   }
   if (!email.includes("@")) throw new ApiError(400, "Email is not valid");
 
-  const existedUser = User.findOne({
+  // if (fullname === "") {
+  //   throw new ApiError(400, "fullname is required")
+  // }
+
+  const existedUser = await User.findOne({
     //This is a Mongoose method that searches for a single document in the MongoDB database.
     $or: [{ username }, { email }], //This is a MongoDB query operator that matches either of the conditions inside the array.
   });
@@ -64,7 +68,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken" //By using select() we ensure that these sensitive fields are excluded from the response when retrieving the created user from the database.
-  ); //findById() helps us to find the entry by checking id field, which is autometically created by mongoDB for every entry
+  ); //findById() help us to find the entry by checking id field, which is autometically created by mongoDB for every entry
 
   if (!createdUser) {
     throw new ApiError(500, "Something went wrong while registering the user");
@@ -73,10 +77,6 @@ const registerUser = asyncHandler(async (req, res) => {
   return res.json(
     new ApiResponse(200, createdUser, "User registered succesfully")
   );
-
-  // if (fullname === "") {
-  //   throw new ApiError(400, "fullname is required")
-  // }
 });
 
 export { registerUser };
