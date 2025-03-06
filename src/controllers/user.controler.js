@@ -40,10 +40,22 @@ const registerUser = asyncHandler(async (req, res) => {
   if (existedUser) {
     throw new ApiError(409, "User with email or username already exists");
   }
+  // console.log(req.files);
 
   //after Uploading the file into local file or server by using multer, we'll get the localFilePath
   const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverLocalPath = req.files?.coverImage[0]?.path;
+  // const coverLocalPath = req.files?.coverImage[0]?.path;
+
+  let coverLocalPath;
+
+  if (
+    //This block of code is used to check whether the coverImage is present(uploaded on server) or not and based on that we uploaded them into cloudinary
+    req.files &&
+    Array.isArray(req.files.coverImage) &&
+    req.files.coverImage.length > 0
+  ) {
+    coverLocalPath = req.files.coverImage[0].path;
+  }
 
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is required");
@@ -57,6 +69,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   const user = await User.create({
+    //User.create(...) is a Mongoose method that inserts a new document (user) into the users collection.
     //we ware just storing the referance into user variable
     fullName,
     avatar: avatar.url,

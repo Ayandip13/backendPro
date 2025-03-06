@@ -18,11 +18,11 @@ const uploadOnCloudinary = async (localFilePath) => {
       resource_type: "auto", // Automatically detect file type (image, video, etc.)
     });
 
-    console.log("File uploaded successfully:", response);
+    // console.log("File uploaded successfully:", response);
 
     //Now safely delete the local file since upload was successful
     fs.unlinkSync(localFilePath);
-    console.log("Local file deleted after successful upload");
+    // console.log("Local file deleted after successful upload");
 
     return response;
   } catch (error) {
@@ -30,6 +30,7 @@ const uploadOnCloudinary = async (localFilePath) => {
 
     //Don't delete the file immediately; log the failure for manual retry
     console.log(`Upload failed! File still exists at: ${localFilePath}`);
+    fs.unlinkSync(localFilePath); // remove the locally saved temporary file as the upload operation got failed
 
     return null; // Return null so we can handle retrying later if needed
   }
