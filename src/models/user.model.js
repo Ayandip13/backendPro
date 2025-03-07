@@ -53,13 +53,13 @@ userSchema.pre("save", async function (next) {
   //`pre` hook is also a middleware which helps to execute the perticular function just before save the data(like encrypt the password before save into database), when each middleware calls next.
   if (!this.isModified("password")) return next(); //calling the next() means pass the flag forward.
 
-  this.password = await bcrypt.hash(this.password, 10); //`bcrypt` is a library which help us to hash(encrypt) our passwords.
+  this.password = await bcrypt.hash(this.password, 10); //`bcrypt` is a library which helps us to hash(encrypt) our passwords.
   next();
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
   //This is how methods (functions) are added to the Mongoose schema. It allows us to define custom methods that can be called on instances of the User model.
-  return await bcrypt.compare(password, this.password); // `this.password` refers to the hashed password stored in the database for this user document
+  return await bcrypt.compare(password, this.password); // `this.password` refers to the hashed password stored in the database for this user document and `password` is field that user send
 };
 
 userSchema.methods.generateAccessToken = async function () {

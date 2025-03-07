@@ -92,4 +92,36 @@ const registerUser = asyncHandler(async (req, res) => {
   );
 });
 
-export { registerUser };
+const loginUser = asyncHandler(async (req, res) => {
+  //get the data from req body
+  //username or email based login
+  //find the user
+  //if user is present, then check the password
+  //if password is present, then generate the access and refresh token and send it to user
+  //send cookie
+
+  const { username, password, email } = req.body;
+
+  if (!username || !email) {
+    throw new ApiError(400, "username or email is required");
+  }
+
+  const user = await User.findOne({
+    // Retrieve a single user document where either the username or email matches using `findOne()`.
+    $or: [{ username }, { email }],
+  });
+
+  if (!user) {
+    throw new ApiError(404, "user doesn't exist");
+  }
+
+  const isPasswordValid = await user.isPasswordCorrect(password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid user credentials");
+  }
+
+  
+});
+
+export { registerUser, loginUser };
