@@ -4,6 +4,24 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+const generateAccessAndRefreshTokens = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken; //inserting the `refreshToken` into database, (cause `user` is the document and we're adding the values into it)
+    await user.save({ validateBeforeSave: false }); //`.save()` is a Mongoose method used to save a document (record) to the MongoDB database.
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(
+      500,
+      "Something went wrong while generating the refresh and access token"
+    );
+  }
+};
+
 const registerUser = asyncHandler(async (req, res) => {
   //Steps to register the user :-
   //Get the user details from the request body (frontend).
@@ -111,17 +129,43 @@ const loginUser = asyncHandler(async (req, res) => {
     $or: [{ username }, { email }],
   });
 
+  //User → Mongoose model (used to query the database)
+  //user → Result of the query (an actual user document or null)
+
   if (!user) {
     throw new ApiError(404, "user doesn't exist");
   }
 
-  const isPasswordValid = await user.isPasswordCorrect(password);
+  const isPasswordValid = await user.isPasswordCorrect(password); //`password` that we've got from the `req.body`
 
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user credentials");
   }
 
-  
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  const options = {
+    httpOnly: true, //Prevents client-side JavaScript access (for security).
+    secure: true, //Ensures cookies are sent only over HTTPS.
+  };
+
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options) // Set access token in a cookie
+    .cookie("refreshToken", refreshToken, options) // Set refresh token in a cookie
+    .json(
+      new ApiResponse(200, {
+        user: loggedInUser,
+        accessToken,
+        refreshToken,
+      })
+    );
 });
 
 export { registerUser, loginUser };
