@@ -161,6 +161,7 @@ const loginUser = asyncHandler(async (req, res) => {
     .cookie("refreshToken", refreshToken, options) // Set refresh token in a cookie
     .json(
       new ApiResponse(200, {
+        //res.json() diye response e token pathano hocche jate frontend easily access korte pare. Mobile apps e cookies properly kaj kore na, tai response e token pathano dorkar hoy.
         user: loggedInUser,
         accessToken,
         refreshToken,
@@ -168,4 +169,29 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser };
+const logOutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  const options = {
+    httpOnly: true, //Prevents client-side JavaScript access (for security).
+    secure: true, //Ensures cookies are sent only over HTTPS.
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged Out"));
+});
+
+export { registerUser, loginUser, logOutUser };
